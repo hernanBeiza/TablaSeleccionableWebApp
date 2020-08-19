@@ -1,0 +1,172 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+
+      <div class="jumbotron">
+        <h1 class="display-4">Prueba Seleccionables</h1>
+        <!--
+        <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+        <hr class="my-4">
+        <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
+        <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
+        -->
+      </div>
+
+    </div>
+
+    <div class="pt-2 offset-8 col-md-4">
+      <button class="btn badge-primary" (click)="agregarAlGrupo()">Crear sentencia única</button>
+    </div>
+
+    <div class="col-md-8">
+      <h5>Sentencias</h5>
+
+      <ngx-datatable #dataTable 
+        class="bootstrap" 
+        [rows]="items"
+        [columnMode]="'force'" 
+        [headerHeight]="20" 
+        [footerHeight]="50" 
+        [rowHeight]="'50'" 
+        [scrollbarH]="true"
+        [messages]="{emptyMessage:'Sin datos.'}"
+        [selected]="itemsSeleccionados" 
+        [selectionType]="SelectionType.checkbox"
+        [selectAllRowsOnPage]="false" 
+        (select)="onSelect($event)" 
+        [limit]="registrosPorPagina">
+
+          <ngx-datatable-column
+              [width]="40"
+              [sortable]="false"
+              [canAutoResize]="false"
+              [draggable]="false"
+              [resizeable]="false"
+              [headerCheckboxable]="false"
+              [checkboxable]="true"
+          ></ngx-datatable-column>
+      
+
+          <ngx-datatable-column name="nombre" [width]="100">
+              <ng-template let-column="column" ngx-datatable-header-template>
+                <span>Nombre </span></ng-template>
+              <ng-template let-value="value" ngx-datatable-cell-template>
+              {{ value }}
+              </ng-template>
+          </ngx-datatable-column>
+
+          <ngx-datatable-column name="era" [width]="100">
+            <!--
+            <ng-template let-column="column" ngx-datatable-header-template>
+              <span>Años </span></ng-template>
+            <ng-template let-value="value" ngx-datatable-cell-template>
+            {{ value }}
+            </ng-template>
+            -->
+            <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex" let-value="value" let-row="row">
+              <span
+                title="Double click to edit"
+                (dblclick)="editing[rowIndex + '-era'] = true"
+                *ngIf="!editing[rowIndex + '-era']">
+                {{ value }}
+              </span>
+              <input
+                autofocus
+                (blur)="updateValue($event, 'era', rowIndex)"
+                type="text"
+                [value]="value"
+                *ngIf="editing[rowIndex + '-era']"/>
+            </ng-template>
+          </ngx-datatable-column>
+
+
+          <ngx-datatable-column name="mes" [width]="100">
+            <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex" let-value="value" let-row="row">
+              <span 
+              title="Double click to edit" 
+              (dblclick)="editing[rowIndex + '-mes'] = true" 
+              *ngIf="!editing[rowIndex + '-mes']">
+                {{ value }}
+              </span>
+              <input 
+              autofocus 
+              (blur)="updateValue($event, 'mes', rowIndex)" 
+              type="text" 
+              [value]="value"
+              *ngIf="editing[rowIndex + '-mes']"/>
+            </ng-template>
+          </ngx-datatable-column>
+
+          <ngx-datatable-column name="dia" [width]="100">
+            <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex" let-value="value" let-row="row">
+              <span 
+              title="Double click to edit" 
+              (dblclick)="editing[rowIndex + '-dia'] = true" 
+                *ngIf="!editing[rowIndex + '-dia']">
+                {{ value }}
+              </span>
+              <input 
+              autofocus 
+              (blur)="updateValue($event, 'dia', rowIndex)" 
+              type="text" 
+              [value]="value"
+              *ngIf="editing[rowIndex + '-dia']"/>
+            </ng-template>
+          </ngx-datatable-column>
+
+        <ngx-datatable-footer>
+          <ng-template ngx-datatable-footer-template
+            let-rowCount="rowCount"
+            let-pageSize="pageSize"
+            let-selectedCount="selectedCount"
+            let-curPage="curPage"
+            let-offset="offset">
+            <div style="width:100%" class="text-center">
+              <div class="row no-gutters">
+                <div class="col-sm-12 col-md-4 pt-1">
+                  Actual: {{ curPage }} | Total: {{ obtenerTotalDePaginas() }}
+                </div>
+                <div class="col-sm-12 col-md-8">
+                  <datatable-pager
+                    [pagerLeftArrowIcon]="'datatable-icon-left'"
+                    [pagerRightArrowIcon]="'datatable-icon-right'"
+                    [pagerPreviousIcon]="'datatable-icon-prev'"
+                    [pagerNextIcon]="'datatable-icon-skip'"
+                    [page]="curPage"
+                    [size]="pageSize"
+                    [count]="rowCount"
+                    [hidden]="!((rowCount / pageSize) > 1)"
+                    (change)="dataTable.onFooterPage($event)">
+                  </datatable-pager>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+        </ngx-datatable-footer>
+
+      </ngx-datatable>
+
+    </div>
+
+    <div class="col-md-4">
+      <h5>Sentencias únicas</h5>
+      <div class="card mb-2" *ngFor="let sentencia of grupos">
+        <div class="card-header">
+          <div class="row">
+            <div class="col-md-10">
+              Grupo Sentencia Única
+            </div>
+            <div class="col-md-2">
+              <button class="btn btn-danger btn-sm" (click)="eliminar(sentencia)">X</button>
+            </div>
+          </div>
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item" *ngFor="let item of sentencia.items; index as i;">{{item.nombre}}</li>
+        </ul>
+      </div>
+    </div>
+ 
+  </div>
+
+</div>
